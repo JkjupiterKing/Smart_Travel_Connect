@@ -5,14 +5,18 @@ import com.Smart_Travel_Connect_api.repo.UserRepo;
 import com.Smart_Travel_Connect_api.model.Ticket;
 import com.Smart_Travel_Connect_api.repo.TicketRepo;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/users")
 @RequiredArgsConstructor
+@CrossOrigin
 public class UserController {
 
     private final UserRepo userRepository;
@@ -57,6 +61,39 @@ public class UserController {
 
         // If password matches
         return user;
+    }
+    @PostMapping("/google-login")
+    public ResponseEntity<Map<String, Object>> googleLogin(@RequestBody User googleUser) {
+
+        String email = googleUser.getEmail();
+        if (email == null || email.isEmpty()) {
+            return ResponseEntity.badRequest()
+                    .body(Map.of("error", "Email is required for Google Login"));
+        }
+
+        User existingUser = userRepository.findByEmail(email);
+
+        Map<String, Object> response = new HashMap<>();
+        response.put("message", "Login successful.");
+
+        // If user already exists, return them
+        if (existingUser != null) {
+            response.put("user", existingUser);
+            return ResponseEntity.ok(response);
+        }
+
+        // If user does not exist → auto register them
+        User newUser = User.builder()
+                .name(googleUser.getName())
+                .email(googleUser.getEmail())
+                .passwordHash(null)   // Google login → no password required
+                .role("user")         // default role
+                .build();
+
+        User savedUser = userRepository.save(newUser);
+        response.put("user", savedUser);
+
+        return ResponseEntity.ok(response);
     }
 
 }

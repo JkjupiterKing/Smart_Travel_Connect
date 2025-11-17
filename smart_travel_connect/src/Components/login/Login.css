@@ -240,7 +240,6 @@ body {
 }
 
 /* BACKGROUND */
-
 .container::before {
   content: "";
   position: absolute;
@@ -248,7 +247,7 @@ body {
   right: 0;
   height: 100vh;
   width: 300vw;
-  transform: translate(35%, 0);
+  transform: translate(-20%, 0);
   background-image: linear-gradient(
     -45deg,
     var(--primary-color) 0%,
@@ -272,7 +271,6 @@ body {
 }
 
 /* RESPONSIVE */
-
 @media only screen and (max-width: 425px) {
   .container::before,
   .container.sign-in::before,
@@ -330,12 +328,15 @@ body {
     font-size: 2rem;
   }
 }
+
+/* LOGO */
 .welcome-logo {
-  width: 17em; /* adjust size */
+  width: 17em;
   height: auto;
   margin-bottom: 20px;
   object-fit: contain;
 }
+
 /* GOOGLE SIGN-IN BUTTON */
 .google-btn {
   width: 240px;
@@ -373,11 +374,13 @@ body {
   color: #444;
   margin-right: 20px;
 }
+
 .google-btn-wrapper {
   display: flex;
   justify-content: center;
   margin-top: 20px;
 }
+
 .tagline {
   font-size: 1.8rem;
   font-weight: 700;

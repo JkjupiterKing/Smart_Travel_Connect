@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from "react";
 import "./Login.css";
 import "boxicons/css/boxicons.min.css";
-
 import { GoogleOAuthProvider, GoogleLogin } from "@react-oauth/google";
 import { jwtDecode } from "jwt-decode";
 
@@ -23,33 +22,37 @@ const Login = () => {
     setMode((prev) => (prev === "sign-in" ? "sign-up" : "sign-in"));
   };
 
-  // Google login handler
+  // GOOGLE LOGIN HANDLER
   const handleGoogleLoginSuccess = async (response) => {
     try {
       const decoded = jwtDecode(response.credential);
 
-      const user = {
+      const googleUser = {
+        name: decoded.name,
         email: decoded.email,
-        username: decoded.name,
-        googleId: decoded.sub,
       };
 
-      const res = await fetch("http://localhost:8080/users/google-login", {
+      console.log("Sending to backend:", googleUser);
+
+      const res = await fetch("http://localhost:8080/api/users/google-login", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(user),
+        body: JSON.stringify(googleUser),
       });
 
       const data = await res.json();
 
-      if (!res.ok || !data.user) {
-        throw new Error(data.message || "Google login failed");
+      if (!res.ok || data.error) {
+        alert(data.error || "Google login failed");
+        return;
       }
 
       localStorage.setItem("user", JSON.stringify(data.user));
-      window.location.href = "/dashboard";
-    } catch (err) {
-      console.error("Google login error:", err);
+
+      // Redirect to home page
+      window.location.href = "/home";
+    } catch (error) {
+      console.error("Google login failed:", error);
       alert("Google login failed.");
     }
   };
@@ -111,6 +114,7 @@ const Login = () => {
 
                 <button>Sign in</button>
 
+                {/* GOOGLE LOGIN BUTTON */}
                 <div className="google-btn-wrapper">
                   <div className="google-btn-container">
                     <GoogleLogin
@@ -137,7 +141,7 @@ const Login = () => {
 
         {/* CONTENT SECTION */}
         <div className="row content-row">
-          {/* SIGN IN CONTENT */}
+          {/* SIGN-IN CONTENT */}
           <div className="col align-items-center flex-col">
             <div className="text sign-in">
               {mode === "sign-in" && (
@@ -151,7 +155,7 @@ const Login = () => {
             <div className="img sign-in"></div>
           </div>
 
-          {/* SIGN UP CONTENT */}
+          {/* SIGN-UP CONTENT */}
           <div className="col align-items-center flex-col">
             <div className="text sign-up">
               {mode === "sign-up" && (
