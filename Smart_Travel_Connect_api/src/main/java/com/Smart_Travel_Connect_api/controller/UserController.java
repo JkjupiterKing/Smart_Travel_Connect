@@ -12,6 +12,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Base64;
 
 @RestController
 @RequestMapping("/api/users")
@@ -22,11 +23,38 @@ public class UserController {
     private final UserRepo userRepository;
     private final TicketRepo ticketRepository;
 
-    // Create User
-    @PostMapping("/Create")
-    public User createUser(@RequestBody User user) {
-        return userRepository.save(user);
+
+    // SIGN-UP (CREATE USER)
+    @PostMapping("/create")
+    public ResponseEntity<?> createUser(@RequestBody User user) {
+
+        if (user.getEmail() == null || user.getEmail().isEmpty()) {
+            return ResponseEntity.badRequest().body(Map.of("error", "Email is required"));
+        }
+        if (user.getPasswordHash() == null || user.getPasswordHash().isEmpty()) {
+            return ResponseEntity.badRequest().body(Map.of("error", "Password is required"));
+        }
+
+        User existing = userRepository.findByEmail(user.getEmail());
+        if (existing != null) {
+            return ResponseEntity.badRequest().body(Map.of("error", "Email already registered"));
+        }
+
+        // 🔐 BASE64 ENCODE PASSWORD
+        String encodedPassword = Base64.getEncoder().encodeToString(user.getPasswordHash().getBytes());
+        user.setPasswordHash(encodedPassword);
+
+        // Default role
+        user.setRole("user");
+
+        User saved = userRepository.save(user);
+
+        return ResponseEntity.ok(Map.of(
+                "message", "User registered successfully",
+                "user", saved
+        ));
     }
+
 
     // Get All Users
     @GetMapping("/all")
@@ -45,23 +73,26 @@ public class UserController {
     public List<Ticket> getTicketsByUser(@PathVariable Long userId) {
         return ticketRepository.findByUserUserId(userId);
     }
-    // Get User by Email and Password Verification (Login)
+
     @PostMapping("/login")
-    public User loginUser(@RequestParam String email, @RequestParam String password) {
+    public ResponseEntity<?> loginUser(@RequestParam String email, @RequestParam String password) {
+
         User user = userRepository.findByEmail(email);
         if (user == null) {
-            throw new RuntimeException("User not found with email: " + email);
+            return ResponseEntity.badRequest().body(Map.of("error", "User not found"));
         }
 
-        // ⚠️ Password verification (assuming passwordHash stores plain text or hashed value)
-        // If using plain text (not recommended in production)
-        if (!user.getPasswordHash().equals(password)) {
-            throw new RuntimeException("Invalid password");
+        // 🔐 Decode stored Base64 password
+        String decodedPassword = new String(Base64.getDecoder().decode(user.getPasswordHash()));
+
+        if (!password.equals(decodedPassword)) {
+            return ResponseEntity.badRequest().body(Map.of("error", "Invalid password"));
         }
 
-        // If password matches
-        return user;
+        return ResponseEntity.ok(Map.of("message", "Login successful", "user", user));
     }
+
+
     @PostMapping("/google-login")
     public ResponseEntity<Map<String, Object>> googleLogin(@RequestBody User googleUser) {
 

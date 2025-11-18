@@ -8,13 +8,35 @@ const CLIENT_ID =
   "275752115354-db8g0ivduartice875j1ug8uv05g2396.apps.googleusercontent.com";
 
 const Login = () => {
-  const [mode, setMode] = useState("");
+  const [mode, setMode] = useState("sign-in");
 
-  // Auto-switch animation
+  // SIGNUP FIELD STATES
+  const [signupData, setSignupData] = useState({
+    username: "",
+    email: "",
+    pass: "",
+    cpass: "",
+  });
+
+  // LOGIN FIELD STATES
+  const [loginData, setLoginData] = useState({
+    email: "",
+    password: "",
+  });
+
+  // SIGNUP INPUT CHANGE HANDLER
+  const handleSignupChange = (e) => {
+    setSignupData({ ...signupData, [e.target.name]: e.target.value });
+  };
+
+  // LOGIN INPUT CHANGE HANDLER
+  const handleLoginChange = (e) => {
+    setLoginData({ ...loginData, [e.target.name]: e.target.value });
+  };
+
+  // INITIAL ANIMATION
   useEffect(() => {
-    const timer = setTimeout(() => {
-      setMode("sign-in");
-    }, 100);
+    const timer = setTimeout(() => setMode("sign-in"), 100);
     return () => clearTimeout(timer);
   }, []);
 
@@ -32,8 +54,6 @@ const Login = () => {
         email: decoded.email,
       };
 
-      console.log("Sending to backend:", googleUser);
-
       const res = await fetch("http://localhost:8080/api/users/google-login", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -48,8 +68,6 @@ const Login = () => {
       }
 
       localStorage.setItem("user", JSON.stringify(data.user));
-
-      // Redirect to home page
       window.location.href = "/home";
     } catch (error) {
       console.error("Google login failed:", error);
@@ -57,36 +75,170 @@ const Login = () => {
     }
   };
 
+  // SIGN-UP HANDLER
+  const handleSignup = async () => {
+    const { username, email, pass, cpass } = signupData;
+
+    // VALIDATION
+    if (!username || !email || !pass || !cpass) {
+      alert("All fields are required!");
+      return;
+    }
+
+    const usernameRegex = /^[A-Za-z0-9 .]{3,}$/;
+    if (!usernameRegex.test(username)) {
+      alert(
+        "Invalid Name:\n\n• Minimum 3 characters\n• Only letters, numbers, spaces, and dots allowed"
+      );
+      return;
+    }
+
+    const emailRegex = /^\S+@\S+\.\S+$/;
+    if (!emailRegex.test(email)) {
+      alert("Please enter a valid email address!");
+      return;
+    }
+
+    const passwordRules =
+      /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
+
+    if (!passwordRules.test(pass)) {
+      alert(
+        "Password must contain:\n\n• Minimum 8 characters\n• At least 1 uppercase letter\n• At least 1 lowercase letter\n• At least 1 number\n• At least 1 special character"
+      );
+      return;
+    }
+
+    if (pass !== cpass) {
+      alert("Passwords do not match!");
+      return;
+    }
+
+    const newUser = {
+      name: username,
+      email: email,
+      passwordHash: pass,
+    };
+
+    try {
+      const res = await fetch("http://localhost:8080/api/users/create", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(newUser),
+      });
+
+      const data = await res.json();
+
+      if (!res.ok || data.error) {
+        alert(data.error || "Signup failed");
+        return;
+      }
+
+      alert("Signup successful!");
+
+      // CLEAR FIELDS
+      setSignupData({
+        username: "",
+        email: "",
+        pass: "",
+        cpass: "",
+      });
+
+      localStorage.setItem("user", JSON.stringify(data.user));
+      window.location.href = "/home";
+    } catch (err) {
+      alert("Error connecting to server!");
+      console.error(err);
+    }
+  };
+
+  // NORMAL LOGIN HANDLER
+  const handleLogin = async () => {
+    const { email, password } = loginData;
+
+    if (!email || !password) {
+      alert("Please enter both email and password!");
+      return;
+    }
+
+    try {
+      const res = await fetch(
+        `http://localhost:8080/api/users/login?email=${encodeURIComponent(
+          email
+        )}&password=${encodeURIComponent(password)}`,
+        {
+          method: "POST",
+        }
+      );
+
+      const data = await res.json();
+
+      if (!res.ok || data.error) {
+        alert(data.error || "Login failed");
+        return;
+      }
+
+      localStorage.setItem("user", JSON.stringify(data.user));
+      window.location.href = "/home";
+    } catch (err) {
+      console.error(err);
+      alert("Server error!");
+    }
+  };
+
   return (
     <GoogleOAuthProvider clientId={CLIENT_ID}>
-      <div id="container" className={`container ${mode}`}>
-        {/* FORM SECTION */}
-        <div className="row">
+      <div id="container" className={`login-container ${mode}`}>
+        <div className="login-row">
           {/* SIGN UP */}
-          <div className="col align-items-center flex-col sign-up">
+          <div className="login-col align-items-center flex-col sign-up">
             <div className="form-wrapper align-items-center">
               <div className="form sign-up">
                 <div className="input-group">
                   <i className="bx bxs-user"></i>
-                  <input type="text" placeholder="Username" />
+                  <input
+                    name="username"
+                    type="text"
+                    placeholder="Username"
+                    value={signupData.username}
+                    onChange={handleSignupChange}
+                  />
                 </div>
 
                 <div className="input-group">
                   <i className="bx bx-mail-send"></i>
-                  <input type="email" placeholder="Email" />
+                  <input
+                    name="email"
+                    type="email"
+                    placeholder="Email"
+                    value={signupData.email}
+                    onChange={handleSignupChange}
+                  />
                 </div>
 
                 <div className="input-group">
                   <i className="bx bxs-lock-alt"></i>
-                  <input type="password" placeholder="Password" />
+                  <input
+                    name="pass"
+                    type="password"
+                    placeholder="Password"
+                    value={signupData.pass}
+                    onChange={handleSignupChange}
+                  />
                 </div>
 
                 <div className="input-group">
                   <i className="bx bxs-lock-alt"></i>
-                  <input type="password" placeholder="Confirm password" />
+                  <input
+                    name="cpass"
+                    type="password"
+                    placeholder="Confirm password"
+                    value={signupData.cpass}
+                    onChange={handleSignupChange}
+                  />
                 </div>
 
-                <button>Sign up</button>
+                <button onClick={handleSignup}>Sign up</button>
 
                 <p>
                   <span>Already have an account? </span>
@@ -99,22 +251,33 @@ const Login = () => {
           </div>
 
           {/* SIGN IN */}
-          <div className="col align-items-center flex-col sign-in">
+          <div className="login-col align-items-center flex-col sign-in">
             <div className="form-wrapper align-items-center">
               <div className="form sign-in">
                 <div className="input-group">
                   <i className="bx bxs-user"></i>
-                  <input type="text" placeholder="Username" />
+                  <input
+                    name="email"
+                    type="email"
+                    placeholder="Email"
+                    value={loginData.email}
+                    onChange={handleLoginChange}
+                  />
                 </div>
 
                 <div className="input-group">
                   <i className="bx bxs-lock-alt"></i>
-                  <input type="password" placeholder="Password" />
+                  <input
+                    name="password"
+                    type="password"
+                    placeholder="Password"
+                    value={loginData.password}
+                    onChange={handleLoginChange}
+                  />
                 </div>
 
-                <button>Sign in</button>
+                <button onClick={handleLogin}>Sign in</button>
 
-                {/* GOOGLE LOGIN BUTTON */}
                 <div className="google-btn-wrapper">
                   <div className="google-btn-container">
                     <GoogleLogin
@@ -140,9 +303,8 @@ const Login = () => {
         </div>
 
         {/* CONTENT SECTION */}
-        <div className="row content-row">
-          {/* SIGN-IN CONTENT */}
-          <div className="col align-items-center flex-col">
+        <div className="login-row content-row">
+          <div className="login-col align-items-center flex-col">
             <div className="text sign-in">
               {mode === "sign-in" && (
                 <img
@@ -152,11 +314,9 @@ const Login = () => {
                 />
               )}
             </div>
-            <div className="img sign-in"></div>
           </div>
 
-          {/* SIGN-UP CONTENT */}
-          <div className="col align-items-center flex-col">
+          <div className="login-col align-items-center flex-col">
             <div className="text sign-up">
               {mode === "sign-up" && (
                 <>

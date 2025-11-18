@@ -1,5 +1,4 @@
 import React, { useState } from "react";
-import "bootstrap/dist/css/bootstrap.min.css";
 const Home = () => {
   const [travelType, setTravelType] = useState("bus");
   const [searchData, setSearchData] = useState({
