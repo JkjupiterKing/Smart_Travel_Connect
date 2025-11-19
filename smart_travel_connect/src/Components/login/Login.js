@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import "./Login.css";
 import "boxicons/css/boxicons.min.css";
+import ForgotPassword from "../Forgot-password/ForgotPassword";
 import { GoogleOAuthProvider, GoogleLogin } from "@react-oauth/google";
 import { jwtDecode } from "jwt-decode";
 
@@ -17,6 +18,8 @@ const Login = () => {
     pass: "",
     cpass: "",
   });
+
+  const [showForgotModal, setShowForgotModal] = useState(false);
 
   // LOGIN FIELD STATES
   const [loginData, setLoginData] = useState({
@@ -79,7 +82,6 @@ const Login = () => {
   const handleSignup = async () => {
     const { username, email, pass, cpass } = signupData;
 
-    // VALIDATION
     if (!username || !email || !pass || !cpass) {
       alert("All fields are required!");
       return;
@@ -136,7 +138,6 @@ const Login = () => {
 
       alert("Signup successful!");
 
-      // CLEAR FIELDS
       setSignupData({
         username: "",
         email: "",
@@ -188,6 +189,7 @@ const Login = () => {
 
   return (
     <GoogleOAuthProvider clientId={CLIENT_ID}>
+      {/* MAIN LOGIN UI */}
       <div id="container" className={`login-container ${mode}`}>
         <div className="login-row">
           {/* SIGN UP */}
@@ -288,7 +290,12 @@ const Login = () => {
                 </div>
 
                 <p>
-                  <b>Forgot password?</b>
+                  <b
+                    className="pointer"
+                    onClick={() => setShowForgotModal(true)}
+                  >
+                    Forgot password?
+                  </b>
                 </p>
 
                 <p>
@@ -331,6 +338,9 @@ const Login = () => {
           </div>
         </div>
       </div>
+      {showForgotModal && (
+        <ForgotPassword closeModal={() => setShowForgotModal(false)} />
+      )}
     </GoogleOAuthProvider>
   );
 };

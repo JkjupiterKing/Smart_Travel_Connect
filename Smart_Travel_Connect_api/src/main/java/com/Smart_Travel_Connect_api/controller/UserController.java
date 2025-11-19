@@ -92,7 +92,6 @@ public class UserController {
         return ResponseEntity.ok(Map.of("message", "Login successful", "user", user));
     }
 
-
     @PostMapping("/google-login")
     public ResponseEntity<Map<String, Object>> googleLogin(@RequestBody User googleUser) {
 
@@ -125,6 +124,31 @@ public class UserController {
         response.put("user", savedUser);
 
         return ResponseEntity.ok(response);
+    }
+
+    @GetMapping("/check-email")
+    public Map<String, Boolean> checkEmail(@RequestParam String email) {
+        User user = userRepository.findByEmail(email);
+        return Map.of("exists", user != null);
+    }
+
+    @PutMapping("/forgot-password")
+    public ResponseEntity<?> resetPassword(
+            @RequestParam String email,
+            @RequestParam String newPassword) {
+
+        User user = userRepository.findByEmail(email);
+        if (user == null) {
+            return ResponseEntity.badRequest().body(Map.of("error", "Email not found"));
+        }
+
+        // Encode password using Base64
+        String encodedPassword = Base64.getEncoder().encodeToString(newPassword.getBytes());
+
+        user.setPasswordHash(encodedPassword);
+        userRepository.save(user);
+
+        return ResponseEntity.ok(Map.of("message", "Password updated successfully"));
     }
 
 }
