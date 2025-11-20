@@ -153,7 +153,6 @@ const Login = () => {
     }
   };
 
-  // NORMAL LOGIN HANDLER
   const handleLogin = async () => {
     const { email, password } = loginData;
 
@@ -167,9 +166,7 @@ const Login = () => {
         `http://localhost:8080/api/users/login?email=${encodeURIComponent(
           email
         )}&password=${encodeURIComponent(password)}`,
-        {
-          method: "POST",
-        }
+        { method: "POST" }
       );
 
       const data = await res.json();
@@ -180,7 +177,13 @@ const Login = () => {
       }
 
       localStorage.setItem("user", JSON.stringify(data.user));
-      window.location.href = "/home";
+
+      // 🔥 ROLE CHECK
+      if (data.user.role === "ADMIN") {
+        window.location.href = "/adminhome";
+      } else {
+        window.location.href = "/home";
+      }
     } catch (err) {
       console.error(err);
       alert("Server error!");

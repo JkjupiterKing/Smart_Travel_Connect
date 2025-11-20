@@ -1,0 +1,88 @@
+/* Navbar Gradient Background */
+.custom-navbar {
+  background: linear-gradient(90deg, #0cb4e2, #1e81b0);
+  padding: 12px 20px;
+  transition: all 0.3s ease-in-out;
+}
+
+/* Brand Logo */
+.navbar-logo {
+  width: 45px;
+  height: 45px;
+  object-fit: contain;
+  transition: transform 0.3s ease-in-out;
+}
+
+/* Brand Hover Animation */
+.brand-hover:hover .navbar-logo {
+  transform: scale(1.1);
+}
+
+.logo-text {
+  color: #ffffff;
+  font-size: 1.5rem;
+  letter-spacing: 0.5px;
+  transition: color 0.3s ease-in-out;
+}
+
+.brand-hover:hover .logo-text {
+  color: #eaffff;
+}
+
+/* Profile Button */
+.profile-btn {
+  color: #ffffff;
+  border-color: #e0e0e0;
+  transition: 0.3s ease-in-out;
+  padding: 6px 15px;
+  border-radius: 25px;
+}
+
+.profile-btn:hover {
+  background-color: rgba(255, 255, 255, 0.15);
+  border-color: #ffffff;
+}
+
+/* Logout Button */
+.logout-btn {
+  background: #f3f0f1;
+  color: black;
+  border-radius: 25px;
+  padding: 7px 18px;
+  font-weight: 500;
+  transition: 0.3s ease;
+}
+
+.logout-btn:hover {
+  background-color: #bb2d3b;
+  transform: translateY(-2px);
+}
+
+/* Dropdown Styling */
+.dropdown-menu {
+  border-radius: 10px;
+  padding: 10px 0;
+  animation: fadeIn 0.25s ease-in-out;
+}
+
+.dropdown-item {
+  padding: 10px 20px;
+  transition: all 0.2s ease;
+}
+
+.dropdown-item:hover {
+  background-color: #f1f1f1;
+  border-radius: 8px;
+}
+
+/* Fade Animation */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(5px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0px);
+  }
+}

@@ -1,4 +1,8 @@
 import React, { useState } from "react";
+import NavbarComponent from "../Navbar/Navbar";
+import { useNavigate } from "react-router-dom";
+import "bootstrap/dist/css/bootstrap.min.css";
+
 const Home = () => {
   const [travelType, setTravelType] = useState("bus");
   const [searchData, setSearchData] = useState({
@@ -6,7 +10,7 @@ const Home = () => {
     to: "",
     date: "",
   });
-
+  const navigate = useNavigate();
   const [results, setResults] = useState([]);
 
   const mockData = [
@@ -41,114 +45,121 @@ const Home = () => {
     setResults(filtered);
   };
 
+  const handleLogout = () => {
+    localStorage.removeItem("user");
+    navigate("/");
+  };
+
   return (
-    <div className="container py-4">
-      {/* Header */}
-      <h1 className="text-center fw-bold mb-4 text-primary">
-        Smart Travel Connect
-      </h1>
+    <>
+      {/* Navbar */}
+      <NavbarComponent onLogout={handleLogout} />
 
-      {/* Search Card */}
-      <div className="card p-4 shadow-lg mx-auto" style={{ maxWidth: "800px" }}>
-        {/* Travel Type Buttons */}
-        <div className="d-flex justify-content-center gap-3 mb-4">
-          <button
-            className={`btn d-flex align-items-center gap-2 ${
-              travelType === "bus" ? "btn-primary" : "btn-outline-secondary"
-            }`}
-            onClick={() => setTravelType("bus")}
-          >
-            <i className="bx bx-bus"></i> Bus
-          </button>
+      {/* Page Content */}
+      <div className="container py-4" style={{ marginTop: "90px" }}>
+        {/* Search Card */}
+        <div
+          className="card p-4 shadow-lg mx-auto"
+          style={{ maxWidth: "800px" }}
+        >
+          <div className="d-flex justify-content-center gap-3 mb-4">
+            <button
+              className={`btn d-flex align-items-center gap-2 ${
+                travelType === "bus" ? "btn-primary" : "btn-outline-secondary"
+              }`}
+              onClick={() => setTravelType("bus")}
+            >
+              <i className="bx bx-bus"></i> Bus
+            </button>
 
-          <button
-            className={`btn d-flex align-items-center gap-2 ${
-              travelType === "train" ? "btn-primary" : "btn-outline-secondary"
-            }`}
-            onClick={() => setTravelType("train")}
-          >
-            <i className="bx bx-train"></i> Train
-          </button>
+            <button
+              className={`btn d-flex align-items-center gap-2 ${
+                travelType === "train" ? "btn-primary" : "btn-outline-secondary"
+              }`}
+              onClick={() => setTravelType("train")}
+            >
+              <i className="bx bx-train"></i> Train
+            </button>
 
-          <button
-            className={`btn d-flex align-items-center gap-2 ${
-              travelType === "flight" ? "btn-primary" : "btn-outline-secondary"
-            }`}
-            onClick={() => setTravelType("flight")}
-          >
-            <i className="bx bx-plane-alt"></i> Flight
-          </button>
-        </div>
-
-        {/* Input Fields */}
-        <div className="row g-3">
-          <div className="col-md-4">
-            <input
-              type="text"
-              placeholder="From"
-              className="form-control"
-              value={searchData.from}
-              onChange={(e) =>
-                setSearchData({ ...searchData, from: e.target.value })
-              }
-            />
+            <button
+              className={`btn d-flex align-items-center gap-2 ${
+                travelType === "flight"
+                  ? "btn-primary"
+                  : "btn-outline-secondary"
+              }`}
+              onClick={() => setTravelType("flight")}
+            >
+              <i className="bx bx-plane-alt"></i> Flight
+            </button>
           </div>
 
-          <div className="col-md-4">
-            <input
-              type="text"
-              placeholder="To"
-              className="form-control"
-              value={searchData.to}
-              onChange={(e) =>
-                setSearchData({ ...searchData, to: e.target.value })
-              }
-            />
-          </div>
-
-          <div className="col-md-4">
-            <input
-              type="date"
-              className="form-control"
-              value={searchData.date}
-              onChange={(e) =>
-                setSearchData({ ...searchData, date: e.target.value })
-              }
-            />
-          </div>
-        </div>
-
-        {/* Search Button */}
-        <div className="text-center mt-4">
-          <button
-            className="btn btn-primary d-flex align-items-center gap-2 mx-auto"
-            onClick={handleSearch}
-          >
-            <i className="bx bx-search"></i> Search
-          </button>
-        </div>
-      </div>
-
-      {/* Results */}
-      <div className="mt-5" style={{ maxWidth: "900px" }}>
-        {results.length > 0 && (
-          <h4 className="fw-semibold mb-3">Available Options</h4>
-        )}
-
-        <div className="d-flex flex-column gap-3">
-          {results.map((item) => (
-            <div key={item.id} className="card p-3 shadow-sm">
-              <h5 className="fw-bold">{item.name}</h5>
-              <p className="text-muted">{item.time}</p>
-              <p className="fw-semibold">₹ {item.price}</p>
-              <p className="text-success">Seats Available: {item.seats}</p>
-
-              <button className="btn btn-primary mt-2 w-25">Book Now</button>
+          <div className="row g-3">
+            <div className="col-md-4">
+              <input
+                type="text"
+                placeholder="From"
+                className="form-control"
+                value={searchData.from}
+                onChange={(e) =>
+                  setSearchData({ ...searchData, from: e.target.value })
+                }
+              />
             </div>
-          ))}
+
+            <div className="col-md-4">
+              <input
+                type="text"
+                placeholder="To"
+                className="form-control"
+                value={searchData.to}
+                onChange={(e) =>
+                  setSearchData({ ...searchData, to: e.target.value })
+                }
+              />
+            </div>
+
+            <div className="col-md-4">
+              <input
+                type="date"
+                className="form-control"
+                value={searchData.date}
+                onChange={(e) =>
+                  setSearchData({ ...searchData, date: e.target.value })
+                }
+              />
+            </div>
+          </div>
+
+          <div className="text-center mt-4">
+            <button
+              className="btn btn-primary d-flex align-items-center gap-2 mx-auto"
+              onClick={handleSearch}
+            >
+              <i className="bx bx-search"></i> Search
+            </button>
+          </div>
+        </div>
+
+        <div className="mt-5" style={{ maxWidth: "900px" }}>
+          {results.length > 0 && (
+            <h4 className="fw-semibold mb-3">Available Options</h4>
+          )}
+
+          <div className="d-flex flex-column gap-3">
+            {results.map((item) => (
+              <div key={item.id} className="card p-3 shadow-sm">
+                <h5 className="fw-bold">{item.name}</h5>
+                <p className="text-muted">{item.time}</p>
+                <p className="fw-semibold">₹ {item.price}</p>
+                <p className="text-success">Seats Available: {item.seats}</p>
+
+                <button className="btn btn-primary mt-2 w-25">Book Now</button>
+              </div>
+            ))}
+          </div>
         </div>
       </div>
-    </div>
+    </>
   );
 };
 

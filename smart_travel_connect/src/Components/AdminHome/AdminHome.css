@@ -1,0 +1,25 @@
+.admin-layout {
+  display: flex;
+}
+
+.admin-content {
+  margin-left: 250px;
+  padding: 30px;
+  width: 100%;
+}
+
+.dashboard-cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 20px;
+}
+
+.card {
+  border-radius: 12px;
+  transition: 0.3s ease;
+}
+
+.card:hover {
+  transform: translateY(-5px);
+  background: #f8faff;
+}
