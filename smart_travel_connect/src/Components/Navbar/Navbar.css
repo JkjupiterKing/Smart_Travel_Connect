@@ -86,3 +86,24 @@
     transform: translateY(0px);
   }
 }
+.nav-btn {
+  border-radius: 5px;
+  padding: 6px 12px;
+  font-size: 15px;
+}
+
+.profile-btn {
+  border-radius: 6px;
+}
+
+.logout-btn {
+  color: white;
+  background-color: #d9534f;
+  padding: 6px 12px;
+  border-radius: 6px;
+  border: none;
+}
+
+.logout-btn:hover {
+  background-color: #c9302c;
+}

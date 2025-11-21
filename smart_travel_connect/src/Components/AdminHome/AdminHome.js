@@ -13,25 +13,25 @@ const AdminHome = () => {
       <Sidebar onLogout={handleLogout} />
 
       <div className="admin-content">
-        <h2 className="fw-bold mb-3">Welcome Admin</h2>
+        <h2 className="fw-bold mb-3">Welcome</h2>
         <p className="text-muted">
-          Manage buses, trains, flights and user operations from the dashboard.
+          Manage buses, trains, flights and customer bookings.
         </p>
 
         <div className="dashboard-cards mt-4">
           <div className="card shadow p-4">
-            <h4>Bus Management</h4>
-            <p>Manage and add bus services.</p>
+            <h4>Total Buses</h4>
+            <p></p>
           </div>
 
           <div className="card shadow p-4">
-            <h4>Train Management</h4>
-            <p>Manage and add train services.</p>
+            <h4>Total Trains</h4>
+            <p></p>
           </div>
 
           <div className="card shadow p-4">
-            <h4>Flight Management</h4>
-            <p>Manage and add flight services.</p>
+            <h4>Total Flights</h4>
+            <p></p>
           </div>
         </div>
       </div>
